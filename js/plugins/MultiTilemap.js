@@ -17,7 +17,7 @@
  * @plugindesc 複数タイルマップイベント作成プラグイン
  * @target MZ @url https://github.com/triacontane/RPGMakerMV/tree/mz_master @author トリアコンタン
  * @version 1.00 2015/11/03 初版
- * 
+ *
  * @help 複数のタイルマップを一つのイベントで表現できるようになります。
  * 本棚やベッドなどをイベントとして作成する際に有効です。
  *
@@ -34,48 +34,49 @@
  *  このプラグインはもうあなたのものです。
  */
 (function () {
+  //=============================================================================
+  // Sprite_Character
+  //  イベントの横幅と高さを適用させます。
+  //=============================================================================
+  Sprite_Character.prototype.setFrame = function (sx, sy, pw, ph) {
+    Sprite.prototype.setFrame.call(this, sx, sy, pw * this._character._width, ph * this._character._height);
+  };
 
-    //=============================================================================
-    // Sprite_Character
-    //  イベントの横幅と高さを適用させます。
-    //=============================================================================
-    Sprite_Character.prototype.setFrame = function(sx, sy, pw, ph) {
-        Sprite.prototype.setFrame.call(this, sx, sy, pw * this._character._width, ph * this._character._height);
-    };
+  //=============================================================================
+  // Game_CharacterBase
+  //  キャラクターの横幅と高さを 1 で設定します。
+  //  衝突とイベント起動判定に使う位置情報取得処理を書き換えます。
+  //=============================================================================
+  var _Game_CharacterBase_initMembers = Game_CharacterBase.prototype.initMembers;
+  Game_CharacterBase.prototype.initMembers = function () {
+    _Game_CharacterBase_initMembers.call(this);
+    this._width = 1;
+    this._height = 1;
+  };
 
-    //=============================================================================
-    // Game_CharacterBase
-    //  キャラクターの横幅と高さを 1 で設定します。
-    //  衝突とイベント起動判定に使う位置情報取得処理を書き換えます。
-    //=============================================================================
-    var _Game_CharacterBase_initMembers = Game_CharacterBase.prototype.initMembers;
-    Game_CharacterBase.prototype.initMembers = function() {
-        _Game_CharacterBase_initMembers.call(this);
-        this._width  = 1;
-        this._height = 1;
-    };
+  Game_CharacterBase.prototype.pos = function (x, y) {
+    return this._x - this._width / 2 <= x && this._x + this._width / 2 >= x && this._y === y;
+  };
 
-    Game_CharacterBase.prototype.pos = function(x, y) {
-        return (this._x - this._width / 2 <= x && this._x + this._width / 2 >= x) && (this._y === y);
-    };
-
-    //=============================================================================
-    // Game_Event
-    //  イベントから note を取得して横幅と高さを設定します。
-    //=============================================================================
-    var _Game_Event_refresh = Game_Event.prototype.refresh;
-    Game_Event.prototype.refresh = function() {
-        _Game_Event_refresh.call(this);
-        var width = 1;
-        var height = 1;
-        if (this._tileId > 0) {
-            var note = this.event().note;
-            if (note) {
-                note.toUpperCase().replace(/\\W(\d+)/, function() {width  = parseInt(arguments[1], 10);});
-                note.toUpperCase().replace(/\\H(\d+)/, function() {height = parseInt(arguments[1], 10);});
-            }
-        }
-        this._width = width;
-        this._height = height;
-    };
+  //=============================================================================
+  // Game_Event
+  //  イベントから note を取得して横幅と高さを設定します。
+  //=============================================================================
+  var _Game_Event_refresh = Game_Event.prototype.refresh;
+  Game_Event.prototype.refresh = function () {
+    _Game_Event_refresh.call(this);
+    var width = 1;
+    var height = 1;
+    var note = this.event().note;
+    if (note) {
+      note.toUpperCase().replace(/\\W(\d+)/, function () {
+        width = parseInt(arguments[1], 10);
+      });
+      note.toUpperCase().replace(/\\H(\d+)/, function () {
+        height = parseInt(arguments[1], 10);
+      });
+    }
+    this._width = width;
+    this._height = height;
+  };
 })();
