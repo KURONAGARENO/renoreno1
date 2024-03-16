@@ -59,19 +59,17 @@
   const _Game_CharacterBase_initMembers = Game_CharacterBase.prototype.initMembers;
   Game_CharacterBase.prototype.initMembers = function () {
     _Game_CharacterBase_initMembers.call(this);
-    this._addSizeUp = 0;
     this._addSizeDown = 0;
-    this._addSizeLeft = 0;
     this._addSizeRight = 0;
   };
 
   const _Game_CharacterBase_pos = Game_CharacterBase.prototype.pos;
   Game_CharacterBase.prototype.pos = function (x, y) {
-    if (this._addSizeUp === 0 && this._addSizeDown === 0 && this._addSizeLeft === 0 && this._addSizeRight === 0) {
+    if (this._addSizeDown === 0 && this._addSizeRight === 0) {
       // このプラグインの値を使う必要がない場合は既存の処理を尊重
       return _Game_CharacterBase_pos.call(this, x, y);
     } else {
-      return this.x - this._addSizeLeft <= x && x <= this.x + this._addSizeRight && this.y - this._addSizeDown <= y && y <= this.y + this._addSizeUp;
+      return this.x <= x && x <= this.x + this._addSizeRight && this.y - this._addSizeDown <= y && y <= this.y;
     }
   };
 
@@ -85,10 +83,8 @@
         if (!m || m.length < 2) return 0;
         else return Number(m[1]);
       };
-      this._addSizeUp = parseNote(note, /\\u(\d+)/);
-      this._addSizeDown = parseNote(note, /\\d(\d+)/);
-      this._addSizeLeft = parseNote(note, /\\l(\d+)/);
-      this._addSizeRight = parseNote(note, /\\r(\d+)/);
+      this._addSizeDown = parseNote(note, /@下(\d+)/);
+      this._addSizeRight = parseNote(note, /@右(\d+)/);
     }
   };
 })();
