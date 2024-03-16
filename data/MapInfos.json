@@ -1,10 +1,10 @@
 [
 null,
 {"id":1,"expanded":true,"name":"主人公の家","order":5,"parentId":0,"scrollX":845.4,"scrollY":475.79999999999995,"quick":false},
-{"id":2,"expanded":true,"name":"さいしょの村","order":1,"parentId":0,"scrollX":1068.75,"scrollY":684.75,"quick":false},
+{"id":2,"expanded":true,"name":"さいしょの村","order":1,"parentId":0,"scrollX":1069.5,"scrollY":684.75,"quick":false},
 {"id":3,"expanded":true,"name":"主人公室内一階","order":6,"parentId":1,"scrollX":1207.7142857142856,"scrollY":679.7142857142857,"quick":false},
 {"id":4,"expanded":false,"name":"主人公室内二階","order":7,"parentId":1,"scrollX":0,"scrollY":0,"quick":false},
 {"id":5,"expanded":false,"name":"ショップ一階","order":2,"parentId":2,"scrollX":1207.7142857142856,"scrollY":679.7142857142857,"quick":false},
-{"id":6,"expanded":true,"name":"ケルナーの家","order":3,"parentId":2,"scrollX":1056.75,"scrollY":594.75,"quick":false},
+{"id":6,"expanded":true,"name":"ケルナーの家","order":3,"parentId":2,"scrollX":705,"scrollY":582.75,"quick":false},
 {"id":7,"expanded":false,"name":"ケルナー地下","order":4,"parentId":6,"scrollX":0,"scrollY":0,"quick":false}
 ]
