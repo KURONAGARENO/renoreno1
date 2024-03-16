@@ -34,49 +34,63 @@
  *  このプラグインはもうあなたのものです。
  */
 (function () {
-  //=============================================================================
-  // Sprite_Character
-  //  イベントの横幅と高さを適用させます。
-  //=============================================================================
-  Sprite_Character.prototype.setFrame = function (sx, sy, pw, ph) {
-    Sprite.prototype.setFrame.call(this, sx, sy, pw * this._character._width, ph * this._character._height);
-  };
+  // 既存のオブジェクトに独自プロパティを追加するためnon use strict
+  // "use strict";
 
-  //=============================================================================
-  // Game_CharacterBase
-  //  キャラクターの横幅と高さを 1 で設定します。
-  //  衝突とイベント起動判定に使う位置情報取得処理を書き換えます。
-  //=============================================================================
-  var _Game_CharacterBase_initMembers = Game_CharacterBase.prototype.initMembers;
+  // if ($gameTemp.isPlaytest()) {
+  //   var i = 0;
+  // }
+
+  // const _Sprite_Character_setFrame = Sprite_Character.prototype.setFrame;
+  // Sprite_Character.prototype.setFrame = function (x, y, width, height) {
+  //   if (
+  //     this._character._addSizeTop === 0 &&
+  //     this._character._addSizeBottom === 0 &&
+  //     this._character._addSizeLeft === 0 &&
+  //     this._character._addSizeRight === 0
+  //   ) {
+  //     // このプラグインの値を使う必要がない場合は既存の処理を尊重
+  //     _Sprite_Character_setFrame.call(this, x, y, width, height);
+  //   } else {
+  //     _Sprite_Character_setFrame.call(this, x, y, width * 2, height);
+  //   }
+  // };
+
+  const _Game_CharacterBase_initMembers = Game_CharacterBase.prototype.initMembers;
   Game_CharacterBase.prototype.initMembers = function () {
     _Game_CharacterBase_initMembers.call(this);
-    this._width = 1;
-    this._height = 1;
+    this._addSizeTop = 0;
+    this._addSizeBottom = 0;
+    this._addSizeLeft = 0;
+    this._addSizeRight = 0;
   };
 
+  const _Game_CharacterBase_pos = Game_CharacterBase.prototype.pos;
   Game_CharacterBase.prototype.pos = function (x, y) {
-    return this._x - this._width / 2 <= x && this._x + this._width / 2 >= x && this._y === y;
+    if (this._addSizeTop === 0 && this._addSizeBottom === 0 && this._addSizeLeft === 0 && this._addSizeRight === 0) {
+      // このプラグインの値を使う必要がない場合は既存の処理を尊重
+      return _Game_CharacterBase_pos.call(this, x, y);
+    } else {
+      return (
+        this.x - this._addSizeLeft <= x && x <= this.x + this._addSizeRight && this.y - this._addSizeBottom <= y && y <= this.y + this._addSizeTop
+      );
+    }
   };
 
-  //=============================================================================
-  // Game_Event
-  //  イベントから note を取得して横幅と高さを設定します。
-  //=============================================================================
-  var _Game_Event_refresh = Game_Event.prototype.refresh;
+  const _Game_Event_refresh = Game_Event.prototype.refresh;
   Game_Event.prototype.refresh = function () {
     _Game_Event_refresh.call(this);
-    var width = 1;
-    var height = 1;
-    var note = this.event().note;
+    const note = this.event().note;
     if (note) {
-      note.toUpperCase().replace(/\\W(\d+)/, function () {
-        width = parseInt(arguments[1], 10);
-      });
-      note.toUpperCase().replace(/\\H(\d+)/, function () {
-        height = parseInt(arguments[1], 10);
-      });
+      const parseNote = (note, regexp) => {
+        const m = note.toLowerCase().match(regexp);
+        if (!m || m.length < 2) return 0;
+        else return Number(m[1]);
+      };
+      this._addSizeTop = parseNote(note, /\\t(\d+)/);
+      this._addSizeBottom = parseNote(note, /\\b(\d+)/);
+      this._addSizeLeft = parseNote(note, /\\l(\d+)/);
+      this._addSizeRight = parseNote(note, /\\r(\d+)/);
     }
-    this._width = width;
-    this._height = height;
   };
 })();
