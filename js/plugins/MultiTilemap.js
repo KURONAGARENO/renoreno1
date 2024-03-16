@@ -44,8 +44,8 @@
   // const _Sprite_Character_setFrame = Sprite_Character.prototype.setFrame;
   // Sprite_Character.prototype.setFrame = function (x, y, width, height) {
   //   if (
-  //     this._character._addSizeTop === 0 &&
-  //     this._character._addSizeBottom === 0 &&
+  //     this._character._addSizeUp === 0 &&
+  //     this._character._addSizeDown === 0 &&
   //     this._character._addSizeLeft === 0 &&
   //     this._character._addSizeRight === 0
   //   ) {
@@ -59,21 +59,19 @@
   const _Game_CharacterBase_initMembers = Game_CharacterBase.prototype.initMembers;
   Game_CharacterBase.prototype.initMembers = function () {
     _Game_CharacterBase_initMembers.call(this);
-    this._addSizeTop = 0;
-    this._addSizeBottom = 0;
+    this._addSizeUp = 0;
+    this._addSizeDown = 0;
     this._addSizeLeft = 0;
     this._addSizeRight = 0;
   };
 
   const _Game_CharacterBase_pos = Game_CharacterBase.prototype.pos;
   Game_CharacterBase.prototype.pos = function (x, y) {
-    if (this._addSizeTop === 0 && this._addSizeBottom === 0 && this._addSizeLeft === 0 && this._addSizeRight === 0) {
+    if (this._addSizeUp === 0 && this._addSizeDown === 0 && this._addSizeLeft === 0 && this._addSizeRight === 0) {
       // このプラグインの値を使う必要がない場合は既存の処理を尊重
       return _Game_CharacterBase_pos.call(this, x, y);
     } else {
-      return (
-        this.x - this._addSizeLeft <= x && x <= this.x + this._addSizeRight && this.y - this._addSizeBottom <= y && y <= this.y + this._addSizeTop
-      );
+      return this.x - this._addSizeLeft <= x && x <= this.x + this._addSizeRight && this.y - this._addSizeDown <= y && y <= this.y + this._addSizeUp;
     }
   };
 
@@ -87,8 +85,8 @@
         if (!m || m.length < 2) return 0;
         else return Number(m[1]);
       };
-      this._addSizeTop = parseNote(note, /\\t(\d+)/);
-      this._addSizeBottom = parseNote(note, /\\b(\d+)/);
+      this._addSizeUp = parseNote(note, /\\u(\d+)/);
+      this._addSizeDown = parseNote(note, /\\d(\d+)/);
       this._addSizeLeft = parseNote(note, /\\l(\d+)/);
       this._addSizeRight = parseNote(note, /\\r(\d+)/);
     }
