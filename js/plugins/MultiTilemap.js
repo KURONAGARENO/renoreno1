@@ -2,12 +2,15 @@
 // MultiTilemap.js
 // ----------------------------------------------------------------------------
 // Copyright (c) 2015 Triacontane
+// Copyright (c) 2024 symsystem
 // This plugin is released under the MIT License.
 // http://opensource.org/licenses/mit-license.php
 // ----------------------------------------------------------------------------
 // Version
 // 1.0.0 2015/11/18 初版
+// 1.1.0 2024/03/17 \w\h -> ＠右＠下
 // ----------------------------------------------------------------------------
+// トリアコンタン
 // [Blog]   : http://triacontane.blogspot.jp/
 // [Twitter]: https://twitter.com/triacontane/
 // [GitHub] : https://github.com/triacontane/
@@ -15,14 +18,19 @@
 
 /*:
  * @plugindesc 複数タイルマップイベント作成プラグイン
- * @target MZ @url https://github.com/triacontane/RPGMakerMV/tree/mz_master @author トリアコンタン
- * @version 1.00 2015/11/03 初版
+ * @target MZ
+ * @url https://github.com/KURONAGARENO/renoreno1/blob/main/js/plugins/MultiTilemap.js
+ * @author トリアコンタン, symsystem
+ * @version 1.1.0
  *
  * @help 複数のタイルマップを一つのイベントで表現できるようになります。
  * 本棚やベッドなどをイベントとして作成する際に有効です。
  *
- * 使用方法：イベントのnoteを以下の通り指定してください。
- *  \w2\h2 (w:横のタイル数 h:縦のタイル数)
+ * 使用方法：イベントのメモに以下の記述してください
+ *  ＠右2＠下2
+ *  - 数字は半角。それ以外は全角
+ *  - 右=右側に何マス伸ばすか。下=下側に何マス伸ばすか。2だと自身のマスを含めて3マス分となります
+ *  - ＠右2
  * エディタ上でタイルマップを指定する際は、
  * 「一番左上のタイルマップ」を指定してください。
  *
@@ -34,49 +42,57 @@
  *  このプラグインはもうあなたのものです。
  */
 (function () {
-  //=============================================================================
-  // Sprite_Character
-  //  イベントの横幅と高さを適用させます。
-  //=============================================================================
-  Sprite_Character.prototype.setFrame = function (sx, sy, pw, ph) {
-    Sprite.prototype.setFrame.call(this, sx, sy, pw * this._character._width, ph * this._character._height);
-  };
+  // 既存のオブジェクトに独自プロパティを追加するためnon use strict
+  // "use strict";
 
-  //=============================================================================
-  // Game_CharacterBase
-  //  キャラクターの横幅と高さを 1 で設定します。
-  //  衝突とイベント起動判定に使う位置情報取得処理を書き換えます。
-  //=============================================================================
-  var _Game_CharacterBase_initMembers = Game_CharacterBase.prototype.initMembers;
+  // if ($gameTemp.isPlaytest()) {
+  //   var i = 0;
+  // }
+
+  // const _Sprite_Character_setFrame = Sprite_Character.prototype.setFrame;
+  // Sprite_Character.prototype.setFrame = function (x, y, width, height) {
+  //   if (
+  //     this._character._addSizeUp === 0 &&
+  //     this._character._addSizeDown === 0 &&
+  //     this._character._addSizeLeft === 0 &&
+  //     this._character._addSizeRight === 0
+  //   ) {
+  //     // このプラグインの値を使う必要がない場合は既存の処理を尊重
+  //     _Sprite_Character_setFrame.call(this, x, y, width, height);
+  //   } else {
+  //     _Sprite_Character_setFrame.call(this, x, y, width * 2, height);
+  //   }
+  // };
+
+  const _Game_CharacterBase_initMembers = Game_CharacterBase.prototype.initMembers;
   Game_CharacterBase.prototype.initMembers = function () {
     _Game_CharacterBase_initMembers.call(this);
-    this._width = 1;
-    this._height = 1;
+    this._addSizeDown = 0;
+    this._addSizeRight = 0;
   };
 
+  const _Game_CharacterBase_pos = Game_CharacterBase.prototype.pos;
   Game_CharacterBase.prototype.pos = function (x, y) {
-    return this._x - this._width / 2 <= x && this._x + this._width / 2 >= x && this._y === y;
+    if (this._addSizeDown === 0 && this._addSizeRight === 0) {
+      // このプラグインの値を使う必要がない場合は既存の処理を尊重
+      return _Game_CharacterBase_pos.call(this, x, y);
+    } else {
+      return this.x <= x && x <= this.x + this._addSizeRight && this.y - this._addSizeDown <= y && y <= this.y;
+    }
   };
 
-  //=============================================================================
-  // Game_Event
-  //  イベントから note を取得して横幅と高さを設定します。
-  //=============================================================================
-  var _Game_Event_refresh = Game_Event.prototype.refresh;
+  const _Game_Event_refresh = Game_Event.prototype.refresh;
   Game_Event.prototype.refresh = function () {
     _Game_Event_refresh.call(this);
-    var width = 1;
-    var height = 1;
-    var note = this.event().note;
+    const note = this.event().note;
     if (note) {
-      note.toUpperCase().replace(/\\W(\d+)/, function () {
-        width = parseInt(arguments[1], 10);
-      });
-      note.toUpperCase().replace(/\\H(\d+)/, function () {
-        height = parseInt(arguments[1], 10);
-      });
+      const parseNote = (note, regexp) => {
+        const m = note.toLowerCase().match(regexp);
+        if (!m || m.length < 2) return 0;
+        else return Number(m[1]);
+      };
+      this._addSizeDown = parseNote(note, /＠下(\d+)/);
+      this._addSizeRight = parseNote(note, /＠右(\d+)/);
     }
-    this._width = width;
-    this._height = height;
   };
 })();
