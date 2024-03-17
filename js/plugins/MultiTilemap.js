@@ -9,59 +9,97 @@
 // Version
 // 1.0.0 2015/11/18 初版
 // 1.1.0 2024/03/17 \w\h -> ＠右＠下
+// 1.2.0 2024/03/17 テストプレイ中はイベントの領域を表示
 // ----------------------------------------------------------------------------
 // トリアコンタン
 // [Blog]   : http://triacontane.blogspot.jp/
 // [Twitter]: https://twitter.com/triacontane/
 // [GitHub] : https://github.com/triacontane/
+// ----------------------------------------------------------------------------
+// fork by https://github.com/triacontane/RPGMakerMV/blob/mz_master/MultiTilemap.js
 //=============================================================================
 
 /*:
- * @plugindesc 複数タイルマップイベント作成プラグイン
- * @target MZ
- * @url https://github.com/KURONAGARENO/renoreno1/blob/main/js/plugins/MultiTilemap.js
- * @author トリアコンタン, symsystem
- * @version 1.1.0
- *
- * @help 複数のタイルマップを一つのイベントで表現できるようになります。
- * 本棚やベッドなどをイベントとして作成する際に有効です。
- *
- * 使用方法：イベントのメモに以下を記述してください。前後に文章があっても問題ありません
- *  ＠右2＠下2
- *  - 数字は半角。それ以外は全角
- *  - 右=右側に何タイル伸ばすか。下=下側に何タイル伸ばすか。＠右2の場合、自身のタイルを含めて幅3となります
- * エディタ上でタイルマップを指定する際は、
- * 「一番左上のタイルマップ」を指定してください。
- *
- * このプラグインにはプラグインコマンドはありません。
- *
- * 利用規約：
- *  作者に無断で改変、再配布が可能で、利用形態（商用、18禁利用等）
- *  についても制限はありません。
- *  このプラグインはもうあなたのものです。
- */
+@plugindesc 複数タイルマップイベント作成プラグイン
+@target MZ
+@url https://github.com/KURONAGARENO/renoreno1/blob/main/js/plugins/MultiTilemap.js
+@author トリアコンタン, symsystem
+@version 1.2.0
+
+@help 複数のタイルマップを一つのイベントで表現できるようになります。
+本棚やベッドなどをイベントとして作成する際に有効です。
+
+使用方法：イベントのメモに以下を記述してください。前後に文章があっても問題ありません
+ ＠右2＠下2
+ - 数字は半角。それ以外は全角
+ - 右=右側に何タイル伸ばすか。下=下側に何タイル伸ばすか。＠右2の場合、自身のタイルを含めて幅3となります
+エディタ上でタイルマップを指定する際は、
+「一番左上のタイルマップ」を指定してください。
+
+このプラグインにはプラグインコマンドはありません。
+
+利用規約：
+ 作者に無断で改変、再配布が可能で、利用形態（商用、18禁利用等）
+ についても制限はありません。
+ このプラグインはもうあなたのものです。
+
+@param RegionColor
+@text 領域の色
+@type string
+@default #FF000080
+@desc
+領域の色をCSSカラー形式(#RRGGBBAA)で指定します。
+*/
 (function () {
   // 既存のオブジェクトに独自プロパティを追加するためnon use strict
   // "use strict";
 
+  const _pluginName = document.currentScript.src.match(/^.*\/(.+)\.js$/)[1];
+  const _parameters = PluginManager.parameters(_pluginName);
+  const RegionColor = _parameters.RegionColor;
+
   // if ($gameTemp.isPlaytest()) {
   //   var i = 0;
   // }
+  const _Sprite_Character_initMembers = Sprite_Character.prototype.initMembers;
+  Sprite_Character.prototype.initMembers = function () {
+    _Sprite_Character_initMembers.call(this);
+    if ($gameTemp.isPlaytest()) {
+      this._regionBitmap = null;
+      this._regionSprite = null;
+    }
+  };
 
-  // const _Sprite_Character_setFrame = Sprite_Character.prototype.setFrame;
-  // Sprite_Character.prototype.setFrame = function (x, y, width, height) {
-  //   if (
-  //     this._character._addSizeUp === 0 &&
-  //     this._character._addSizeDown === 0 &&
-  //     this._character._addSizeLeft === 0 &&
-  //     this._character._addSizeRight === 0
-  //   ) {
-  //     // このプラグインの値を使う必要がない場合は既存の処理を尊重
-  //     _Sprite_Character_setFrame.call(this, x, y, width, height);
-  //   } else {
-  //     _Sprite_Character_setFrame.call(this, x, y, width * 2, height);
-  //   }
-  // };
+  const _Sprite_Character_updateBitmap = Sprite_Character.prototype.updateBitmap;
+  Sprite_Character.prototype.updateBitmap = function () {
+    _Sprite_Character_updateBitmap.call(this);
+    if ($gameTemp.isPlaytest()) {
+      if (this._character instanceof Game_Event && this.parent) {
+        const event = this._character;
+        // 設定した幅・高さを考慮した塗つぶし画像を用意してスプライトを作成
+        const tileWidth = $gameMap.tileWidth();
+        const tileHeight = $gameMap.tileHeight();
+        const widthPixel = (1 + event._addSizeRight) * tileWidth;
+        const heightPixel = (1 + event._addSizeDown) * tileHeight;
+        if (!this._regionBitmap) {
+          this._regionBitmap = new Bitmap(widthPixel, heightPixel);
+          this._regionBitmap.fillAll(RegionColor);
+        }
+        if (!this._regionSprite) {
+          this._regionSprite = new Sprite(this._regionBitmap);
+        }
+        // 表示はイベントの左上のピクセルから開始
+        // マップスクロールに対応するため随時更新
+        const displayX = $gameMap.displayX();
+        const displayY = $gameMap.displayY();
+        const relativeEventX = event.x - displayX;
+        const relativeEventY = event.y - displayY;
+        this._regionSprite.move(relativeEventX * tileWidth, relativeEventY * tileHeight);
+        // イベントにスプライトが設定されているかどうかに関わらず描画したいので親であるマップ全体の子に追加する
+        this.parent.addChild(this._regionSprite);
+      }
+    }
+  };
 
   const _Game_CharacterBase_initMembers = Game_CharacterBase.prototype.initMembers;
   Game_CharacterBase.prototype.initMembers = function () {
