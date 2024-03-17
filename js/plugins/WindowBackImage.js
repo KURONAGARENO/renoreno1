@@ -335,7 +335,7 @@
       sprite.scale.x = (backImageData["ScaleX"] || 100) / 100;
       sprite.scale.y = (backImageData["ScaleY"] || 100) / 100;
       this._windowBackImageSprites.push(sprite);
-      this._windowSpriteContainer.addChild(sprite);
+      this._container.addChild(sprite);
     }, this);
   };
 
