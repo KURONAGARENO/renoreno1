@@ -58,9 +58,6 @@
   const _parameters = PluginManager.parameters(_pluginName);
   const RegionColor = _parameters.RegionColor;
 
-  // if ($gameTemp.isPlaytest()) {
-  //   var i = 0;
-  // }
   const _Sprite_Character_initMembers = Sprite_Character.prototype.initMembers;
   Sprite_Character.prototype.initMembers = function () {
     _Sprite_Character_initMembers.call(this);
