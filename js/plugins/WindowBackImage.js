@@ -6,6 +6,7 @@
 // http://opensource.org/licenses/mit-license.php
 // ----------------------------------------------------------------------------
 // Version
+// 1.6.0 2024/03/17 MZ対応(エラー修正、背景ウィンドウ非表示、Window_NameBox追加)
 // 1.5.1 2021/01/30 バトラーステータスウィンドウが選択肢に抜けていたので追加
 // 1.5.0 2021/01/24 ウィンドウごとに個別のウィンドウスキンを指定できる機能を追加
 // 1.4.0 2020/12/28 JK_MailSystem.jsの各ウィンドウをオプション項目に追加
@@ -16,15 +17,18 @@
 // 1.1.0 2017/11/19 拡大率を設定できる機能を追加
 // 1.0.0 2017/11/18 初版
 // ----------------------------------------------------------------------------
+// トリアコンタン
 // [Blog]   : https://triacontane.blogspot.jp/
 // [Twitter]: https://twitter.com/triacontane/
 // [GitHub] : https://github.com/triacontane/
+// ----------------------------------------------------------------------------
+// fork: https://raw.githubusercontent.com/triacontane/RPGMakerMV/master/WindowBackImage.js
 //=============================================================================
 
 /*:
  * @plugindesc ウィンドウ背景画像指定プラグイン
  * @target MZ
- * @author トリアコンタン
+ * @author トリアコンタン, symsystem
  *
  * @param windowImageInfo
  * @text ウィンドウ画像情報
@@ -107,10 +111,12 @@
  * @value Window_ShopNumber
  * @option [ショップ画面]ステータスウィンドウ
  * @value Window_ShopStatus
- * @option [名前入力画面]名前ウィンドウ
+ * @option [名前入力画面]名前編集ウィンドウ
  * @value Window_NameEdit
  * @option [名前入力画面]名前入力ウィンドウ
  * @value Window_NameInput
+ * @option [マップ画面]名前ウィンドウ
+ * @value Window_NameBox
  * @option [マップ画面]選択肢ウィンドウ
  * @value Window_ChoiceList
  * @option [マップ画面]数値入力ウィンドウ
@@ -301,6 +307,32 @@
     param.windowImageInfo = [];
   }
 
+  function windowContainerAddChildBackSpriteAndFrameSprite(window) {
+    try {
+      window._container.getChildIndex(window._backSprite);
+    } catch {
+      window._container.addChild(window._backSprite);
+    }
+    try {
+      window._container.getChildIndex(window._frameSprite);
+    } catch {
+      window._container.addChild(window._frameSprite);
+    }
+  }
+
+  function windowContainerRemoveChildBackSpriteAndFrameSprite(window) {
+    try {
+      if (window._container.getChildIndex(window._backSprite) !== -1) {
+        window._container.removeChild(window._backSprite);
+      }
+    } catch {}
+    try {
+      if (window._container.getChildIndex(window._frameSprite) !== -1) {
+        window._container.removeChild(window._frameSprite);
+      }
+    } catch {}
+  }
+
   //=============================================================================
   // Window
   //  専用の背景画像を設定します。
@@ -326,8 +358,7 @@
    * @private
    */
   Window.prototype._createBackImage = function () {
-    this._backSprite.visible = false;
-    this._frameSprite.visible = false;
+    windowContainerRemoveChildBackSpriteAndFrameSprite(this);
     this._windowBackImageSprites = [];
     this._backImageDataList.forEach(function (backImageData) {
       var bitmap = ImageManager.loadPicture(backImageData["ImageFile"]);
@@ -387,8 +418,11 @@
         defaultVisible = false;
       }
     }, this);
-    this._backSprite.visible = defaultVisible;
-    this._frameSprite.visible = defaultVisible;
+    if (defaultVisible) {
+      windowContainerAddChildBackSpriteAndFrameSprite(this);
+    } else {
+      windowContainerRemoveChildBackSpriteAndFrameSprite(this);
+    }
   };
 
   var _Window_Base_loadWindowskin = Window_Base.prototype.loadWindowskin;

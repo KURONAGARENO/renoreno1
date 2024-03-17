@@ -16,7 +16,7 @@
 // [Twitter]: https://twitter.com/triacontane/
 // [GitHub] : https://github.com/triacontane/
 // ----------------------------------------------------------------------------
-// fork by https://github.com/triacontane/RPGMakerMV/blob/mz_master/MultiTilemap.js
+// fork: https://github.com/triacontane/RPGMakerMV/blob/mz_master/MultiTilemap.js
 //=============================================================================
 
 /*:
