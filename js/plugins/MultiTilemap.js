@@ -2,12 +2,15 @@
 // MultiTilemap.js
 // ----------------------------------------------------------------------------
 // Copyright (c) 2015 Triacontane
+// Copyright (c) 2024 symsystem
 // This plugin is released under the MIT License.
 // http://opensource.org/licenses/mit-license.php
 // ----------------------------------------------------------------------------
 // Version
 // 1.0.0 2015/11/18 初版
+// 1.1.0 2024/03/17 \w\h -> ＠右＠下
 // ----------------------------------------------------------------------------
+// トリアコンタン
 // [Blog]   : http://triacontane.blogspot.jp/
 // [Twitter]: https://twitter.com/triacontane/
 // [GitHub] : https://github.com/triacontane/
@@ -15,14 +18,19 @@
 
 /*:
  * @plugindesc 複数タイルマップイベント作成プラグイン
- * @target MZ @url https://github.com/triacontane/RPGMakerMV/tree/mz_master @author トリアコンタン
- * @version 1.00 2015/11/03 初版
+ * @target MZ
+ * @url https://github.com/KURONAGARENO/renoreno1/blob/main/js/plugins/MultiTilemap.js
+ * @author トリアコンタン, symsystem
+ * @version 1.1.0
  *
  * @help 複数のタイルマップを一つのイベントで表現できるようになります。
  * 本棚やベッドなどをイベントとして作成する際に有効です。
  *
- * 使用方法：イベントのnoteを以下の通り指定してください。
- *  \w2\h2 (w:横のタイル数 h:縦のタイル数)
+ * 使用方法：イベントのメモに以下の記述してください
+ *  ＠右2＠下2
+ *  - 数字は半角。それ以外は全角
+ *  - 右=右側に何マス伸ばすか。下=下側に何マス伸ばすか。2だと自身のマスを含めて3マス分となります
+ *  - ＠右2
  * エディタ上でタイルマップを指定する際は、
  * 「一番左上のタイルマップ」を指定してください。
  *
