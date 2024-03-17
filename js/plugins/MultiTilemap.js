@@ -83,8 +83,8 @@
         if (!m || m.length < 2) return 0;
         else return Number(m[1]);
       };
-      this._addSizeDown = parseNote(note, /@下(\d+)/);
-      this._addSizeRight = parseNote(note, /@右(\d+)/);
+      this._addSizeDown = parseNote(note, /＠下(\d+)/);
+      this._addSizeRight = parseNote(note, /＠右(\d+)/);
     }
   };
 })();
