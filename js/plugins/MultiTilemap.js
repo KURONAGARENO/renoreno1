@@ -76,6 +76,7 @@
       // このプラグインの値を使う必要がない場合は既存の処理を尊重
       return _Game_CharacterBase_pos.call(this, x, y);
     } else {
+      // プラグインで設定した範囲を考慮して判定を返す
       return this.x <= x && x <= this.x + this._addSizeRight && this.y <= y && y <= this.y + this._addSizeDown;
     }
   };
