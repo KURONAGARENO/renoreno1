@@ -2,7 +2,7 @@
 @target MZ
 @plugindesc パーティメンバー全員解除
 @author symsystem
-@url 
+@url https://github.com/KURONAGARENO/renoreno1/blob/main/js/plugins/RemoveActorAll.js
 
 @help
 「パーティメンバー全員解除」というプラグインコマンドを追加します
