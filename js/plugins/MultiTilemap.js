@@ -7,6 +7,7 @@
 // http://opensource.org/licenses/mit-license.php
 // ----------------------------------------------------------------------------
 // Version
+// 1.2.1 2024/03/21 領域表示機能をON/OFFできるように
 // 1.2.0 2024/03/17 テストプレイ中はイベントの領域を表示
 // 1.1.0 2024/03/17 \w\h -> ＠右＠下
 // 1.0.0 2015/11/18 初版
@@ -32,7 +33,10 @@
 使用方法：イベントのメモに以下を記述してください。前後に文章があっても問題ありません
  ＠右2＠下2
  - 数字は半角。それ以外は全角
- - 右=右側に何タイル伸ばすか。下=下側に何タイル伸ばすか。＠右2の場合、自身のタイルを含めて幅3となります
+ - 右=右側に何タイル伸ばすか。下=下側に何タイル伸ばすか
+   ＠右2の場合、自身のタイルを含めて幅3となります
+ - ＠右2 だけ ＠下2 だけでも動作します
+
 エディタ上でタイルマップを指定する際は、
 「一番左上のタイルマップ」を指定してください。
 
@@ -43,6 +47,13 @@
  についても制限はありません。
  このプラグインはもうあなたのものです。
 
+@param RegionDisplay
+@text 領域を表示するか
+@type boolean
+@default true
+@desc
+領域表示機能を有効にします。ただしテストプレイでない場合は設定を無視して無効になります。
+
 @param RegionColor
 @text 領域の色
 @type string
@@ -51,17 +62,17 @@
 領域の色をCSSカラー形式(#RRGGBBAA)で指定します。
 */
 (function () {
-  // 既存のオブジェクトに独自プロパティを追加するためnon use strict
-  // "use strict";
+  "use strict";
 
   const _pluginName = document.currentScript.src.match(/^.*\/(.+)\.js$/)[1];
   const _parameters = PluginManager.parameters(_pluginName);
+  const RegionDisplay = _parameters.RegionDisplay.toLowerCase() === "true";
   const RegionColor = _parameters.RegionColor;
 
   const _Sprite_Character_initMembers = Sprite_Character.prototype.initMembers;
   Sprite_Character.prototype.initMembers = function () {
     _Sprite_Character_initMembers.call(this);
-    if ($gameTemp.isPlaytest()) {
+    if (RegionDisplay && $gameTemp.isPlaytest()) {
       this._regionBitmap = null;
       this._regionSprite = null;
     }
@@ -70,7 +81,7 @@
   const _Sprite_Character_updateBitmap = Sprite_Character.prototype.updateBitmap;
   Sprite_Character.prototype.updateBitmap = function () {
     _Sprite_Character_updateBitmap.call(this);
-    if ($gameTemp.isPlaytest()) {
+    if (RegionDisplay && $gameTemp.isPlaytest()) {
       if (this._character instanceof Game_Event && this.parent) {
         const event = this._character;
         // 設定した幅・高さを考慮した塗つぶし画像を用意してスプライトを作成
