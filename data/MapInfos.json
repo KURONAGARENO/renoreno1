@@ -10,5 +10,5 @@ null,
 {"id":8,"expanded":true,"name":"お試し画面用","order":10,"parentId":4,"scrollX":1207.7142857142856,"scrollY":828.8571428571428,"quick":false},
 {"id":9,"expanded":true,"name":"森１","order":5,"parentId":2,"scrollX":816,"scrollY":624,"quick":false},
 null,
-{"id":11,"expanded":false,"name":"森戦闘","order":6,"parentId":9,"scrollX":1207.7142857142856,"scrollY":1720.2857142857142,"quick":false}
+{"id":11,"expanded":false,"name":"森戦闘","order":6,"parentId":9,"scrollX":1207.7142857142856,"scrollY":679.7142857142857,"quick":false}
 ]
