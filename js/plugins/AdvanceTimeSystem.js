@@ -1,8 +1,12 @@
 /*:
-@target MV MZ
-@plugindesc 時間経過システム ver1.3.3
-@author うなぎおおとろ
-@url https://raw.githubusercontent.com/unagiootoro/RPGMZ/master/AdvanceTimeSystem.js
+@target MZ
+@plugindesc 時間経過システム
+@author うなぎおおとろ, symsystem
+@url https://github.com/KURONAGARENO/renoreno1/blob/main/js/plugins/AdvanceTimeSystem.js
+
+Version
+1.4.0 2024/03/27 時間帯を表現する日本語文章を変数(TimezoneMessageJaVariableID)に設定するように
+1.3.3 2024/03/27 https://raw.githubusercontent.com/unagiootoro/RPGMZ/master/AdvanceTimeSystem.js からfork
 
 @command ChangeTimezone
 @text ChangeTimezone
@@ -32,7 +36,17 @@
 @default 1
 @desc
 時間帯を管理する変数のID
+$gameVariables.value(1) や /V[1] の "1" の部分を指します。
 変数の値は、(0:朝、1:昼、2:夕方、3:夜、4:深夜、5:夜明け)を意味します。
+TimezoneMessageJaVariableID と違う値である必要があります。
+
+@param TimezoneMessageJaVariableID
+@type number
+@default 2
+@desc
+時間帯を表現する日本語文章を管理する変数のID
+$gameVariables.value(1) や /V[1] の "1" の部分を指します。
+TimezoneVariableID と違う値である必要があります。
 
 @param EnableAdvanceTimeSwitchID
 @type number
@@ -172,54 +186,62 @@ AdvanceTimeSystem EnableTimeEffect
 const AdvanceTimeSystemPluginName = document.currentScript.src.match(/^.*\/(.+)\.js$/)[1];
 
 (() => {
-"use strict";
+  "use strict";
 
-const params = PluginManager.parameters(AdvanceTimeSystemPluginName);
-const TimezoneVariableID = parseInt(params["TimezoneVariableID"]);
-const EnableAdvanceTimeSwitchID = parseInt(params["EnableAdvanceTimeSwitchID"]);
+  const params = PluginManager.parameters(AdvanceTimeSystemPluginName);
+  const TimezoneVariableID = parseInt(params["TimezoneVariableID"]);
+  const TimezoneMessageJaVariableID = parseInt(params["TimezoneMessageJaVariableID"]);
+  if (TimezoneVariableID === TimezoneMessageJaVariableID) {
+    throw new Error("Same value TimezoneVariableID and TimezoneMessageJaVariableID");
+  }
+  const EnableAdvanceTimeSwitchID = parseInt(params["EnableAdvanceTimeSwitchID"]);
 
-const MorningSteps = parseInt(params["MorningSteps"]);
-const NoonSteps = parseInt(params["NoonSteps"]);
-const EveningSteps = parseInt(params["EveningSteps"]);
-const NightSteps = parseInt(params["NightSteps"]);
-const LateNightSteps = parseInt(params["LateNightSteps"]);
-const DawnSteps = parseInt(params["DawnSteps"]);
+  const MorningSteps = parseInt(params["MorningSteps"]);
+  const NoonSteps = parseInt(params["NoonSteps"]);
+  const EveningSteps = parseInt(params["EveningSteps"]);
+  const NightSteps = parseInt(params["NightSteps"]);
+  const LateNightSteps = parseInt(params["LateNightSteps"]);
+  const DawnSteps = parseInt(params["DawnSteps"]);
 
-const MorningTint = JSON.parse(params["MorningTint"]);
-const NoonTint = JSON.parse(params["NoonTint"]);
-const EveningTint = JSON.parse(params["EveningTint"]);
-const NightTint = JSON.parse(params["NightTint"]);
-const LateNightTint = JSON.parse(params["LateNightTint"]);
-const DawnTint = JSON.parse(params["DawnTint"]);
+  const MorningTint = JSON.parse(params["MorningTint"]);
+  const NoonTint = JSON.parse(params["NoonTint"]);
+  const EveningTint = JSON.parse(params["EveningTint"]);
+  const NightTint = JSON.parse(params["NightTint"]);
+  const LateNightTint = JSON.parse(params["LateNightTint"]);
+  const DawnTint = JSON.parse(params["DawnTint"]);
 
-const FadeFrame = parseInt(params["FadeFrame"]);
+  const FadeFrame = parseInt(params["FadeFrame"]);
 
-const Morning = 0;
-const Noon = 1;
-const Evening = 2;
-const Night = 3;
-const LateNight = 4;
-const Dawn = 5;
+  const Morning = 0;
+  const Noon = 1;
+  const Evening = 2;
+  const Night = 3;
+  const LateNight = 4;
+  const Dawn = 5;
 
-let $timezoneDatas = null;
+  let $timezoneDatas = null;
 
-class Timezone {
+  class Timezone {
     constructor(steps, tint) {
-        this._steps = steps;
-        this._tint = tint;
+      this._steps = steps;
+      this._tint = tint;
     }
 
-    get steps() { return this._steps }; 
-    get tint() { return this._tint }; 
-}
+    get steps() {
+      return this._steps;
+    }
+    get tint() {
+      return this._tint;
+    }
+  }
 
-//class Game_Map
-Game_Map.prototype.getNextTimezoneSteps = function() {
+  //class Game_Map
+  Game_Map.prototype.getNextTimezoneSteps = function () {
     return $timezoneDatas[this.nowTimezone()].steps;
-};
+  };
 
-const _Game_Map_initialize = Game_Map.prototype.initialize
-Game_Map.prototype.initialize = function() {
+  const _Game_Map_initialize = Game_Map.prototype.initialize;
+  Game_Map.prototype.initialize = function () {
     _Game_Map_initialize.call(this);
     this._nightBgm = undefined;
     this._isAdvanceTimeMap = undefined;
@@ -228,9 +250,9 @@ Game_Map.prototype.initialize = function() {
     this.createTimezoneDatas();
     this._lastTimezone = this.nowTimezone() - 1;
     this._nextTimezoneSteps = this.getNextTimezoneSteps();
-};
+  };
 
-Game_Map.prototype.createTimezoneDatas = function() {
+  Game_Map.prototype.createTimezoneDatas = function () {
     $timezoneDatas = {};
     $timezoneDatas[Morning] = new Timezone(MorningSteps, MorningTint);
     $timezoneDatas[Noon] = new Timezone(NoonSteps, NoonTint);
@@ -238,206 +260,223 @@ Game_Map.prototype.createTimezoneDatas = function() {
     $timezoneDatas[Night] = new Timezone(NightSteps, NightTint);
     $timezoneDatas[LateNight] = new Timezone(LateNightSteps, LateNightTint);
     $timezoneDatas[Dawn] = new Timezone(DawnSteps, DawnTint);
-}
+  };
 
-Game_Map.prototype.getTimezoneValue = function(timezoneName) {
+  Game_Map.prototype.getTimezoneValue = function (timezoneName) {
     switch (timezoneName) {
-    case "Morning":
+      case "Morning":
         return Morning;
-    case "Noon":
+      case "Noon":
         return Noon;
-    case "Evening":
+      case "Evening":
         return Evening;
-    case "Night":
+      case "Night":
         return Night;
-    case "LateNight":
+      case "LateNight":
         return LateNight;
-    case "Dawn":
+      case "Dawn":
         return Dawn;
     }
     return null;
-}
+  };
 
-const _Game_Map_setup = Game_Map.prototype.setup
-Game_Map.prototype.setup = function(mapId) {
+  const _Game_Map_setup = Game_Map.prototype.setup;
+  Game_Map.prototype.setup = function (mapId) {
     _Game_Map_setup.call(this, mapId);
     this._nightBgm = undefined;
     this._isAdvanceTimeMap = undefined;
     if (this._enableTimeEffect) {
-        if ($dataMap.meta.NoEffectMap) {
-            this._noEffectMap = true;
-            this.clearTimeEffect();
-        } else {
-            this._noEffectMap = false;
-            this.applyTimeEffect(1);
-        }
+      if ($dataMap.meta.NoEffectMap) {
+        this._noEffectMap = true;
+        this.clearTimeEffect();
+      } else {
+        this._noEffectMap = false;
+        this.applyTimeEffect(1);
+      }
     }
-};
+  };
 
-Game_Map.prototype.applyTimeEffect = function(fadeFrame) {
+  Game_Map.prototype.applyTimeEffect = function (fadeFrame) {
     $gameScreen.startTint($timezoneDatas[this.nowTimezone()].tint, fadeFrame);
-};
+  };
 
-Game_Map.prototype.clearTimeEffect = function() {
+  Game_Map.prototype.clearTimeEffect = function () {
     $gameScreen.startTint([0, 0, 0, 0], 1);
-};
+  };
 
-Game_Map.prototype.enableTimeEffect = function() {
+  Game_Map.prototype.enableTimeEffect = function () {
     this._noEffectMap = false;
     this._enableTimeEffect = true;
     this.applyTimeEffect(1);
-};
+  };
 
-Game_Map.prototype.disableTimeEffect = function() {
+  Game_Map.prototype.disableTimeEffect = function () {
     this._noEffectMap = true;
     this._enableTimeEffect = false;
     this.clearTimeEffect();
-};
+  };
 
-Game_Map.prototype.nowTimezone = function() {
+  Game_Map.prototype.nowTimezone = function () {
     return $gameVariables.value(TimezoneVariableID);
-};
+  };
 
-Game_Map.prototype.changeTimezone = function(timezone, fadeFrame = FadeFrame) {
+  Game_Map.prototype.changeTimezone = function (timezone, fadeFrame = FadeFrame) {
+    // 現在の時間帯に合わせた日本語を変数に設定
+    const timezoneMessageJa = () => {
+      switch (timezone) {
+        case 0:
+          return "朝";
+        case 1:
+          return "昼";
+        case 2:
+          return "夕方";
+        case 3:
+          return "夜";
+        case 4:
+          return "深夜";
+        case 5:
+          return "夜明け";
+      }
+    };
+    $gameVariables.setValue(TimezoneMessageJaVariableID, timezoneMessageJa());
+
     $gameVariables.setValue(TimezoneVariableID, timezone);
     if (!this._noEffectMap) this.applyTimeEffect(fadeFrame);
     this._nextTimezoneSteps = this.getNextTimezoneSteps();
-};
+  };
 
-Game_Map.prototype.firstTimezone = function() {
+  Game_Map.prototype.firstTimezone = function () {
     return Morning;
-}
+  };
 
-Game_Map.prototype.lastTimezone = function() {
+  Game_Map.prototype.lastTimezone = function () {
     return Dawn;
-}
+  };
 
-Game_Map.prototype.advanceTimezone = function() {
+  Game_Map.prototype.advanceTimezone = function () {
     if (this.nowTimezone() < this.lastTimezone()) {
-        this.changeTimezone(this.nowTimezone() + 1);
+      this.changeTimezone(this.nowTimezone() + 1);
     } else {
-        this.changeTimezone(this.firstTimezone());
+      this.changeTimezone(this.firstTimezone());
     }
-};
+  };
 
-Game_Map.prototype.advanceTime = function() {
+  Game_Map.prototype.advanceTime = function () {
     this._nextTimezoneSteps--;
     if (this._nextTimezoneSteps === 0) this.advanceTimezone();
-};
+  };
 
-Game_Map.prototype.encounterList = function() {
+  Game_Map.prototype.encounterList = function () {
     return $dataMap.encounterList.filter((encounter) => {
-        const encounterTimezone = this.getEncounterTimezone(encounter);
-        if (encounterTimezone != null) {
-            if (encounterTimezone === this.nowTimezone()) return true;
-            return false;
-        }
-        return true;
+      const encounterTimezone = this.getEncounterTimezone(encounter);
+      if (encounterTimezone != null) {
+        if (encounterTimezone === this.nowTimezone()) return true;
+        return false;
+      }
+      return true;
     });
-};
+  };
 
-Game_Map.prototype.getEncounterTimezone = function(encounter) {
+  Game_Map.prototype.getEncounterTimezone = function (encounter) {
     const troop = $dataTroops[encounter.troopId];
     const matchData = troop.name.match(/^<(.+)>/);
     if (matchData) return this.getTimezoneValue(matchData[1]);
     return null;
-};
+  };
 
-Game_Map.prototype.autoplay = function() {
+  Game_Map.prototype.autoplay = function () {
     if ($dataMap.autoplayBgm) {
-        if ($gamePlayer.isInVehicle()) {
-            $gameSystem.saveWalkingBgm2();
+      if ($gamePlayer.isInVehicle()) {
+        $gameSystem.saveWalkingBgm2();
+      } else {
+        if (this.nowTimezone() >= Night && this.nightBgm()) {
+          AudioManager.playBgm(this.nightBgm());
         } else {
-            if (this.nowTimezone() >= Night && this.nightBgm()) {
-                AudioManager.playBgm(this.nightBgm());
-            } else {
-                AudioManager.playBgm($dataMap.bgm);
-            }
+          AudioManager.playBgm($dataMap.bgm);
         }
+      }
     }
     if ($dataMap.autoplayBgs) AudioManager.playBgs($dataMap.bgs);
-};
+  };
 
-Game_Map.prototype.nightBgm = function() {
+  Game_Map.prototype.nightBgm = function () {
     if (this._nightBgm === undefined) {
-        if ($dataMap.meta.NightBgm) {
-            const bgmData = JSON.parse($dataMap.meta.NightBgm);
-            const name = bgmData[0];
-            const pitch = (bgmData[1] ? bgmData[1] : $dataMap.bgm.pitch);
-            const volume = (bgmData[2] ? bgmData[2] : $dataMap.bgm.volume);
-            const pan = (bgmData[3] ? bgmData[3] : $dataMap.bgm.pan);
-            const bgm = {
-                name: name,
-                pitch: pitch,
-                volume: volume,
-                pan: pan
-            };
-            this._nightBgm = bgm;
-        } else {
-            this._nightBgm = null;
-        }
+      if ($dataMap.meta.NightBgm) {
+        const bgmData = JSON.parse($dataMap.meta.NightBgm);
+        const name = bgmData[0];
+        const pitch = bgmData[1] ? bgmData[1] : $dataMap.bgm.pitch;
+        const volume = bgmData[2] ? bgmData[2] : $dataMap.bgm.volume;
+        const pan = bgmData[3] ? bgmData[3] : $dataMap.bgm.pan;
+        const bgm = {
+          name: name,
+          pitch: pitch,
+          volume: volume,
+          pan: pan,
+        };
+        this._nightBgm = bgm;
+      } else {
+        this._nightBgm = null;
+      }
     }
     return this._nightBgm;
-};
+  };
 
-Game_Map.prototype.isAdvanceTimeMap = function() {
+  Game_Map.prototype.isAdvanceTimeMap = function () {
     if (this._isAdvanceTimeMap === undefined) {
-        if ($dataMap.meta.AdvanceTimeMap) {
-            this._isAdvanceTimeMap = true;
-        } else {
-            this._isAdvanceTimeMap = false;
-        }
+      if ($dataMap.meta.AdvanceTimeMap) {
+        this._isAdvanceTimeMap = true;
+      } else {
+        this._isAdvanceTimeMap = false;
+      }
     }
     return this._isAdvanceTimeMap;
-};
+  };
 
-Game_Map.prototype.isEnableAdvanceTime = function() {
+  Game_Map.prototype.isEnableAdvanceTime = function () {
     if (this._noEffectMap) return false;
     if (EnableAdvanceTimeSwitchID === 0) return true;
     return $gameSwitches.value(EnableAdvanceTimeSwitchID);
-};
+  };
 
-// class Game_Player
-const _Game_Player_increaseSteps = Game_Player.prototype.increaseSteps
-Game_Player.prototype.increaseSteps = function() {
+  // class Game_Player
+  const _Game_Player_increaseSteps = Game_Player.prototype.increaseSteps;
+  Game_Player.prototype.increaseSteps = function () {
     _Game_Player_increaseSteps.call(this);
     if ($gameMap.isAdvanceTimeMap() && $gameMap.isEnableAdvanceTime()) $gameMap.advanceTime();
-};
+  };
 
-
-// Register plugin command.
-if (Utils.RPGMAKER_NAME === "MZ") {
+  // Register plugin command.
+  if (Utils.RPGMAKER_NAME === "MZ") {
     PluginManager.registerCommand(AdvanceTimeSystemPluginName, "ChangeTimezone", (args) => {
-        const timezone = parseInt(args["Timezone"]);
-        const fadeFrame = !args["FadeFrame"] || args["FadeFrame"] === "0" ? FadeFrame : parseInt(args["FadeFrame"]);
-        $gameMap.changeTimezone(timezone, fadeFrame);
+      const timezone = parseInt(args["Timezone"]);
+      const fadeFrame = !args["FadeFrame"] || args["FadeFrame"] === "0" ? FadeFrame : parseInt(args["FadeFrame"]);
+      $gameMap.changeTimezone(timezone, fadeFrame);
     });
 
     PluginManager.registerCommand(AdvanceTimeSystemPluginName, "EnableTimeEffect", () => {
-        $gameMap.enableTimeEffect();
+      $gameMap.enableTimeEffect();
     });
 
     PluginManager.registerCommand(AdvanceTimeSystemPluginName, "DisableTimeEffect", () => {
-        $gameMap.disableTimeEffect();
+      $gameMap.disableTimeEffect();
     });
-}
-const _Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
-Game_Interpreter.prototype.pluginCommand = function(command, args) {
+  }
+  const _Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
+  Game_Interpreter.prototype.pluginCommand = function (command, args) {
     _Game_Interpreter_pluginCommand.call(this, command, args);
     if (command !== "AdvanceTimeSystem") return;
     switch (args[0]) {
-    case "ChangeTimezone":
+      case "ChangeTimezone":
         const timezone = parseInt(args[1]);
         const fadeFrame = !args[2] || args[2] === "0" ? FadeFrame : parseInt(args[2]);
         $gameMap.changeTimezone(timezone, fadeFrame);
         break;
-    case "EnableTimeEffect":
+      case "EnableTimeEffect":
         $gameMap.enableTimeEffect();
         break;
-    case "DisableTimeEffect":
+      case "DisableTimeEffect":
         $gameMap.disableTimeEffect();
         break;
     }
-};
-
+  };
 })();
