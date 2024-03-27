@@ -36,7 +36,7 @@ Version
 @default 1
 @desc
 時間帯を管理する変数のID
-$gameVariables.value(1) や /V[1] の "1" の部分を指します。
+$gameVariables.value(1) や\V[1] の "1" の部分を指します。
 変数の値は、(0:朝、1:昼、2:夕方、3:夜、4:深夜、5:夜明け)を意味します。
 TimezoneMessageJaVariableID と違う値である必要があります。
 
@@ -45,7 +45,7 @@ TimezoneMessageJaVariableID と違う値である必要があります。
 @default 2
 @desc
 時間帯を表現する日本語文章を管理する変数のID
-$gameVariables.value(1) や /V[1] の "1" の部分を指します。
+$gameVariables.value(2) や \V[2] の "2" の部分を指します。
 TimezoneVariableID と違う値である必要があります。
 
 @param EnableAdvanceTimeSwitchID
@@ -294,6 +294,8 @@ const AdvanceTimeSystemPluginName = document.currentScript.src.match(/^.*\/(.+)\
         this.applyTimeEffect(1);
       }
     }
+    // 時間帯関連変数の明示的な初期化
+    this.setTimezoneVariables(this.nowTimezone());
   };
 
   Game_Map.prototype.applyTimeEffect = function (fadeFrame) {
@@ -320,7 +322,9 @@ const AdvanceTimeSystemPluginName = document.currentScript.src.match(/^.*\/(.+)\
     return $gameVariables.value(TimezoneVariableID);
   };
 
-  Game_Map.prototype.changeTimezone = function (timezone, fadeFrame = FadeFrame) {
+  Game_Map.prototype.setTimezoneVariables = function (timezone) {
+    $gameVariables.setValue(TimezoneVariableID, timezone);
+
     // 現在の時間帯に合わせた日本語を変数に設定
     const timezoneMessageJa = () => {
       switch (timezone) {
@@ -339,8 +343,10 @@ const AdvanceTimeSystemPluginName = document.currentScript.src.match(/^.*\/(.+)\
       }
     };
     $gameVariables.setValue(TimezoneMessageJaVariableID, timezoneMessageJa());
+  };
 
-    $gameVariables.setValue(TimezoneVariableID, timezone);
+  Game_Map.prototype.changeTimezone = function (timezone, fadeFrame = FadeFrame) {
+    this.setTimezoneVariables(timezone);
     if (!this._noEffectMap) this.applyTimeEffect(fadeFrame);
     this._nextTimezoneSteps = this.getNextTimezoneSteps();
   };
