@@ -1,7 +1,7 @@
 [
 null,
 {"id":1,"expanded":true,"name":"主人公の家","order":8,"parentId":0,"scrollX":1036.3636363636365,"scrollY":857.4545454545455,"quick":false},
-{"id":2,"expanded":true,"name":"さいしょの村","order":1,"parentId":0,"scrollX":1207.7142857142856,"scrollY":679.7142857142857,"quick":false},
+{"id":2,"expanded":true,"name":"さいしょの村","order":1,"parentId":0,"scrollX":1088,"scrollY":680,"quick":false},
 {"id":3,"expanded":true,"name":"主人公室内一階","order":9,"parentId":1,"scrollX":845.4,"scrollY":475.79999999999995,"quick":false},
 {"id":4,"expanded":true,"name":"主人公室内二階","order":10,"parentId":1,"scrollX":1056.75,"scrollY":594.75,"quick":false},
 {"id":5,"expanded":false,"name":"ショップ一階","order":2,"parentId":2,"scrollX":855.4285714285713,"scrollY":666,"quick":false},
