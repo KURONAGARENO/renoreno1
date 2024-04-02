@@ -22,5 +22,6 @@ var $plugins =
 {"name":"SwitchesInitializeOn","status":true,"description":"スイッチを初期ONにする","parameters":{"TargetSwitchIds":"[1]"}},
 {"name":"MessageAlignCenter","status":true,"description":"メッセージの中央揃えプラグイン","parameters":{"escapeCharacterCenter":"ac","escapeCharacterRight":"ar","escapeCharacterVCenter":"vc","escapeCharacterVBottom":"vb"}},
 {"name":"BalloonPosition","status":true,"description":"フキダシ位置調整プラグイン","parameters":{"BalloonXNoImage":"0","BalloonYNoImage":"-10","BalloonXPlayer":"0","BalloonYPlayer":"0","BalloonXEvent":"0","BalloonYEvent":"0"}},
-{"name":"FilterControllerMZ","status":true,"description":"FilterControllerMZ","parameters":{"decimalVariable":"true","displacementImage":"DisplacementMap","enabledAll-Settings":"","enabledAll-ShowInOptionMenu":"false","enabledAll-Text":"フィルター効果","enabledAll-DefaultValue":"true"}}
+{"name":"FilterControllerMZ","status":true,"description":"FilterControllerMZ","parameters":{"decimalVariable":"true","displacementImage":"DisplacementMap","enabledAll-Settings":"","enabledAll-ShowInOptionMenu":"false","enabledAll-Text":"フィルター効果","enabledAll-DefaultValue":"true"}},
+{"name":"TorigoyaMZ_EnemyHpBar","status":true,"description":"敵にHPバーを表示プラグイン (v.1.3.2)","parameters":{"base":"","basePosition":"top","basePosX":"0","basePosY":"0","customize":"","customizeCondition":"always","customizeGaugeWidth":"100","customizeGaugeHeight":"10","customizeDrawLabel":"true","customizeLabelWidth":"20","customizeLabelFontSize":"16","customizeValueFontSize":"20","customizeMaskHpValue":"?????"}}
 ];
