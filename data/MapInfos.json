@@ -53,7 +53,7 @@ null,
 {"id":51,"expanded":true,"name":"シュナンフォルダ","order":24,"parentId":27,"scrollX":819.4285714285713,"scrollY":652.2857142857142,"quick":false},
 {"id":52,"expanded":true,"name":"けシュナンの家","order":25,"parentId":51,"scrollX":819.4285714285713,"scrollY":652.2857142857142,"quick":false},
 {"id":53,"expanded":false,"name":"けシュナン二階","order":26,"parentId":52,"scrollX":0,"scrollY":0,"quick":false},
-{"id":54,"expanded":true,"name":"薬草の森","order":27,"parentId":51,"scrollX":2321.3333333333335,"scrollY":852.6666666666666,"quick":false},
+{"id":54,"expanded":true,"name":"薬草の森","order":27,"parentId":51,"scrollX":816,"scrollY":696,"quick":false},
 {"id":55,"expanded":false,"name":"謎の場所","order":28,"parentId":54,"scrollX":816,"scrollY":624,"quick":false},
-{"id":56,"expanded":false,"name":"謎森２","order":29,"parentId":54,"scrollX":637.3333333333334,"scrollY":507.3333333333333,"quick":false}
+{"id":56,"expanded":false,"name":"謎森２","order":29,"parentId":54,"scrollX":1296,"scrollY":1014.6666666666666,"quick":false}
 ]
