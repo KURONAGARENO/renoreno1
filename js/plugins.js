@@ -28,5 +28,6 @@ var $plugins =
 {"name":"CursorApplicationToButtonPicture","status":true,"description":"ピクチャボタンにマウスカーソルが重なった時カーソルを表示します。","parameters":{"playCursorSe":"true","useCursorImage":"false","cursorImageName":"Cursor","isCursorXRight":"true","isCursorYDown":"true","borderWidth":"3","isBorderOffset":"true","borderColor":"{\"red\":\"255\",\"green\":\"255\",\"blue\":\"255\",\"alpha\":\"0.5\"}"}},
 {"name":"Mano_CurrencyUnit","status":true,"description":"変数やアイテムを消費して購入できるショップが作れます。\r\n競合率・中ぐらい","parameters":{}},
 {"name":"NAPI_LimitedOneShop","status":true,"description":"一点物ショッププラグイン","parameters":{}},
-{"name":"DarkPlasma_MaxItemCount","status":true,"description":"アイテム最大所持数変更","parameters":{"defaultMaxItemCount":"99"}}
+{"name":"DarkPlasma_MaxItemCount","status":true,"description":"アイテム最大所持数変更","parameters":{"defaultMaxItemCount":"99"}},
+{"name":"CreateShop","status":true,"description":"合成屋 Ver0.10.8(2022/9/10)","parameters":{"MenuCommand":"アイテム合成","MenuSwitch":"0","DisableMenuSwitch":"0","MenuGoods":"","BuyOnly":"false","BuyName":"合成する","SellName":"分解する","CancelName":"やめる","MaterialName":"必要素材","MiniWindow":"false","SubCommand":"false"}}
 ];
