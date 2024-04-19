@@ -29,5 +29,6 @@ var $plugins =
 {"name":"Mano_CurrencyUnit","status":true,"description":"変数やアイテムを消費して購入できるショップが作れます。\r\n競合率・中ぐらい","parameters":{}},
 {"name":"NAPI_LimitedOneShop","status":true,"description":"一点物ショッププラグイン","parameters":{}},
 {"name":"DarkPlasma_MaxItemCount","status":true,"description":"アイテム最大所持数変更","parameters":{"defaultMaxItemCount":"99"}},
-{"name":"CreateShop","status":true,"description":"合成屋 Ver0.10.8(2022/9/10)","parameters":{"MenuCommand":"アイテム合成","MenuSwitch":"0","DisableMenuSwitch":"0","MenuGoods":"","BuyOnly":"false","BuyName":"合成する","SellName":"分解する","CancelName":"やめる","MaterialName":"必要素材","MiniWindow":"false","SubCommand":"false"}}
+{"name":"CreateShop","status":true,"description":"合成屋 Ver0.10.8(2022/9/10)","parameters":{"MenuCommand":"アイテム合成","MenuSwitch":"0","DisableMenuSwitch":"0","MenuGoods":"","BuyOnly":"false","BuyName":"合成する","SellName":"分解する","CancelName":"やめる","MaterialName":"必要素材","MiniWindow":"false","SubCommand":"false"}},
+{"name":"NRP_Substitute","status":true,"description":"v1.011 身代わりの効果を拡張する。","parameters":{"CoverDefaultSubstitute":"true","SubstituteHpRate":"25","TargetDamageType":"1,5","TargetHitType":"1,2","TargetSkillType":"0,1,2","TargetForOneSkill":"false","SubstituteItem":"false","AnimationId":"","DynamicSkill":"","SvMotionDuration":"","Wait":"10","<Counter Skill>":"","CounterGroup":"","CounterGroupNG":""}}
 ];
