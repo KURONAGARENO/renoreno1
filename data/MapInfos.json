@@ -55,7 +55,7 @@ null,
 {"id":53,"expanded":false,"name":"シュナン二階","order":27,"parentId":52,"scrollX":0,"scrollY":0,"quick":false},
 {"id":54,"expanded":true,"name":"薬草の森","order":29,"parentId":51,"scrollX":740.25,"scrollY":733.5,"quick":false},
 {"id":55,"expanded":false,"name":"謎の場所","order":30,"parentId":54,"scrollX":728.25,"scrollY":577.5,"quick":false},
-{"id":56,"expanded":false,"name":"謎森２","order":31,"parentId":54,"scrollX":1647.75,"scrollY":862.5,"quick":false},
+{"id":56,"expanded":false,"name":"謎森２","order":31,"parentId":54,"scrollX":1647.75,"scrollY":850.5,"quick":false},
 {"id":57,"expanded":false,"name":"お花畑","order":32,"parentId":54,"scrollX":758.25,"scrollY":1810.5,"quick":false},
 {"id":58,"expanded":true,"name":"OPシュナンの家","order":28,"parentId":52,"scrollX":728.25,"scrollY":577.5,"quick":false},
 {"id":59,"expanded":true,"name":"他ケルナーの家","order":24,"parentId":34,"scrollX":728.25,"scrollY":577.5,"quick":false}
